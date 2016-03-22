@@ -8,7 +8,21 @@ data CellState = Alive | Dead
 data Position = Position Int Int
     deriving (Show, Eq)
 
-type Board = [(Position, CellState)]
+type Cell = (Position, CellState)
+
+type Board = [Cell]
+
+data Game = Game Int Int Board deriving Show
+
+make_cell :: Int -> Int -> Cell
+make_cell x y = ((Position x y), Alive)
+
+add_cell_to_board :: Int -> Int -> Board -> Board
+add_cell_to_board x y board = board ++ [make_cell x y]
+
+make_board :: [(Int, Int)] -> Board
+make_board []        = []
+make_board ((cx,cy):cs) = add_cell_to_board cx cy $ make_board cs
 
 get_cell_state :: Board -> Position -> CellState
 get_cell_state board position =
@@ -48,11 +62,5 @@ compute_new_cell board y x =
     Dead -> []
   where pos = (Position x y)
 
-print_board board width height = map (print_line board width) [0..height]
+update_game (Game width height board) = (Game width height (compute_new_board board width height))
 
-print_line board width y = concat $ map (print_cell board y) [0..width]
-
-print_cell board y x =
-  case (get_cell_state board (Position x y)) of
-    Alive -> ['X']
-    Dead  -> [' ']  

@@ -4,33 +4,14 @@ import GOL
 import UI.NCurses
 
 cross :: Board
-cross = [
-    ((Position 1 1), Alive)
-  , ((Position 2 0), Alive)
-  , ((Position 2 1), Alive)
-  , ((Position 2 2), Alive)
-  , ((Position 3 1), Alive)
-  ]
+cross = make_board [(1,1),(2,0),(2,1),(2,2),(3,1)]
 
 glider :: Board
-glider = [
-    ((Position 1 1), Alive)
-  , ((Position 2 2), Alive)
-  , ((Position 3 0), Alive)
-  , ((Position 3 1), Alive)
-  , ((Position 3 2), Alive)
-  ]
+glider = make_board [(1,1),(2,2),(3,0),(3,1),(3,2)]
 
 inf_one :: Board
-inf_one = [
-    ((Position 4 4), Alive),((Position 4 5), Alive),((Position 4 6), Alive),((Position 4 8), Alive),
-    ((Position 5 4), Alive),
-    ((Position 6 7), Alive),((Position 6 8), Alive),
-    ((Position 7 6), Alive),((Position 7 6), Alive),((Position 7 8), Alive),
-    ((Position 8 4), Alive),((Position 8 6), Alive),((Position 8 8), Alive)
-  ]
-  
-data Game = Game Int Int Board deriving Show
+inf_one = make_board [(4,4),(4,5),(4,6),(4,8),(5,4),(6,7),(6,8),(7,6),(7,6),(7,8),(8,4),(8,6),(8,8)]
+
 
 render_game (Game width height board) = mapM_ (render_line board width) [0..height]
 
@@ -42,15 +23,13 @@ render_cell board y x = do
   drawString cell
   where cell = if (is_alive (get_cell_state board (Position x y))) then "X" else "."
     
-update_game (Game width height board) = (Game width height (compute_new_board board width height))
-
 run_game n g = go n g
   where
     go n g | n > 0 = go (n-1) (update_game g)
     go n g         = g
 
 
-g = Game 20 20 inf_one
+g = Game 20 20 cross
 
 main :: IO ()
 main = runCurses $ do
